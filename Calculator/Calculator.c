@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-char choice(void);
 float calculate(char choice, float x, float y);
 void usage(void);
 
 int main(int argc, char *argv[])
 {
+    printf("Starting\n\n");
     if (argc < 4) 
     {
-        printf("Not enough command-line arguments.");
+        printf("Error: Not enough command-line arguments.");
         usage();
         return 1;
     }
@@ -27,19 +28,19 @@ int main(int argc, char *argv[])
         } 
         else 
         {
-            if (argv[i] == "plus" || argv[i] == '+')
+            if (strncmp(argv[i], "plus", 5) == 0 || strncmp(argv[i], "+", 1) == 0)
             {
                 operation = '+';
             }
-            else if (strncmp(argv[i], "minus", 6) == 0 || argv[i] == '-')
+            else if (strncmp(argv[i], "minus", 6) == 0 || strncmp(argv[i], "-", 1) == 0)
             {
                 operation = '-';
             }
-            else if (argv[i] == "times" || argv[i] == '*')
+            else if (strncmp(argv[i], "times", 6) == 0 || strncmp(argv[i], "*", 1) == 0)
             {
                 operation = '*';
             }
-            else if (argv[i] == "over" || argv[i] == '/')
+            else if (strncmp(argv[i], "over", 4) == 0 || strncmp(argv[i], "/", 1) == 0)
             {
                 operation = '/';
             }
