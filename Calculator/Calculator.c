@@ -1,13 +1,12 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 float calculate(char choice, float x, float y);
 void usage(void);
 
 int main(int argc, char *argv[])
 {
-    printf("Starting\n\n");
     if (argc < 4) 
     {
         printf("Error: Not enough command-line arguments.");
@@ -15,63 +14,62 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    float operators[argc / 2], result;
-    int counter;
+    double operators[10], result;
+    int counter = 0;
     char operation;
 
-    for (int i = 1; i < argc; i++)
-    {
-        if (i % 2 == 1)
+    for (int i = 1; i < argc; i++) // Parse arguments.
+    {   
+        if (i % 2 == 1) // If it's a number, add it to the numbers array
         {  
-            operators[counter] = atoi(argv[i]);
+            operators[counter] = atof(argv[i]); // Convert str to float
             counter++;
         } 
-        else 
+
+        if (strncmp(argv[i], "plus", 5) == 0 || strncmp(argv[i], "+", 1) == 0)
         {
-            if (strncmp(argv[i], "plus", 5) == 0 || strncmp(argv[i], "+", 1) == 0)
-            {
-                operation = '+';
-            }
-            else if (strncmp(argv[i], "minus", 6) == 0 || strncmp(argv[i], "-", 1) == 0)
-            {
-                operation = '-';
-            }
-            else if (strncmp(argv[i], "times", 6) == 0 || strncmp(argv[i], "*", 1) == 0)
-            {
-                operation = '*';
-            }
-            else if (strncmp(argv[i], "over", 4) == 0 || strncmp(argv[i], "/", 1) == 0)
-            {
-                operation = '/';
-            }
+            operation = '+';
+        }
+        
+        if (strncmp(argv[i], "minus", 6) == 0 || strncmp(argv[i], "-", 1) == 0)
+        {
+            operation = '-';
+        }
+        
+        if (strncmp(argv[i], "times", 6) == 0 || strncmp(argv[i], "*", 1) == 0)
+        {
+            operation = '*';
+        }
+        
+        if (strncmp(argv[i], "over", 4) == 0 || strncmp(argv[i], "/", 1) == 0)
+        {
+            operation = '/';
         }
     }
 
     result = calculate(operation, operators[0], operators[1]);
+
+    printf("Result: %.2f\n", result);
 
 	return 0;
 }
 
 float calculate(char choice, float x, float y)
 {
-    float result;
+    double result;
     switch(choice)
     {
         case '+':
             result = x + y;
-            printf("Result: %.f\n", result);
             break;
         case '-':
             result = x - y;
-            printf("Result: %.f\n", result);
             break;
         case '*':
             result = x * y;
-            printf("Result: %.f\n", result);
             break;
         case '/':
             result = x / y;
-            printf("Result: %.2f\n", result);
             break;
     }
 
