@@ -82,6 +82,6 @@ void usage(void)
     printf("Examples:\n");
     printf("Sum:\t\t 2 plus 3\tor\t 2 + 3\n");
     printf("Subtraction:\t 5 minus 2\tor\t 5 - 2\n");
-    printf("Multiplication:\t 4 times 5\tor\t 4 * 5\n");
+    printf("Multiplication:\t 4 times 5\tor\t 4 \\* 5\n");
     printf("Division:\t 10 over 5\tor\t 10 / 5\n");
 }

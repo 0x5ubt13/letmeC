@@ -1,2 +1,9 @@
 # letmeC
-Starting the intimidating adventure of coding in C. If you are looking for inspiration to program something in C, take a look in here, everything is up for grabs!
+Using some C to try and nail some basic concepts.
+
+Snippets available:
+
+1. [Hello world!](./HelloWorld/HelloWorld.c)
+    - Why of course.
+2. [Basic calculator](./Basic+Calculator/basic_calculator.c)
+    - A basic calculator to get started in C that takes 3 arguments: two numbers and either words or symbols
