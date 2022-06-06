@@ -7,3 +7,5 @@ Snippets available:
     - Why of course.
 2. [Basic calculator](./Basic%20Calculator/basic_calculator.c)
     - A basic calculator to get started in C that takes 3 arguments: two numbers and either words or symbols
+3. [C-heatsheet](./C-heatsheet/c-heatsheet.c)
+    - A cheatsheet inspired in the one I did for [Go](https://github.com/0x5ubt13/LetsGo/blob/main/Massive_Cheatsheet/massiveCheatSheet.go), but in C this time.
