@@ -4,6 +4,33 @@
 #include <limits.h> // Provides variables to run types function
 #include <float.h>
 
+void pointers(void)
+{
+    /* Quick notes about pointers:
+        Using * means pointer to
+        Using & means address of
+        Dereferencing means declaring variable *p and then calling *p instead of p, which means "whatever there is at this memory location"
+
+    */
+
+   int n = 50;  // 4 bytes containing decimal 50
+   int *p = &n; // pointer to the address of the 4 bytes storing n
+   //int* p = &n; would be equivalent to int *p = &n
+
+   // To print out the address of n, we can do the following:
+   printf("%p\n", p);   // prints 0x7ff7ba10847c (randomised address)
+   printf("%p\n", &n);  // prints 0x7ff7ba10847c (randomised address)
+
+   // Other shenanigans with pointers:
+   printf("%i\n", *p);  // <- dereference operator, prints 50 (n) 
+
+   char *s = "HI!";     // Pointer to string containing HI!
+   char *c = &s[0];     // Pointer containing the address of H
+   printf("%p\n", s);   // Prints 0x1045bed90
+   printf("%p\n", c);   // Also prints 0x1045bed90
+
+}
+
 void types(void)
 {   
     /* Borrowed from https://www.tutorialspoint.com/cprogramming/c_data_types.htm
@@ -57,6 +84,7 @@ void types(void)
 
 int main(void) 
 {
-    types();
+    pointers();
+    //types();
 }
 
