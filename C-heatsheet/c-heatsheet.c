@@ -1,57 +1,100 @@
-#include <stdio.h>  // 
-#include <stdlib.h> // strcmp
-#include <string.h> // 
+#include <stdio.h>  // printf
+#include <stdlib.h> // 
+#include <string.h> // strcmp
 #include <limits.h> // Provides variables to run types function
 #include <float.h>
 
 void pointers(void)
 {
-    /* Quick notes about pointers:
+    /* 
+        Quick notes about pointers:
         Using * means pointer to
         Using & means address of
         Dereferencing means declaring variable *p and then calling *p instead of p, which means "whatever there is at this memory location"
-
+        There can be pointers to pointers (oof)
     */
 
-   int n = 50;  // 4 bytes containing decimal 50
-   int *p = &n; // pointer to the address of the 4 bytes storing n
-   //int* p = &n; would be equivalent to int *p = &n
+    int n = 50;  // 4 bytes containing decimal 50
+    int *p = &n; // pointer to the address of the 4 bytes storing n
+    //int* p = &n; would be equivalent to int *p = &n
 
-   // To print out the address of n, we can do the following:
-   printf("%p\n", p);   // prints 0x7ff7ba10847c (randomised address)
-   printf("%p\n", &n);  // prints 0x7ff7ba10847c (randomised address)
+    // To print out the address of n, we can do the following:
+    printf("%p\n", p);   // prints 0x7ff7ba10847c (randomised address)
+    printf("%p\n", &n);  // prints 0x7ff7ba10847c (randomised address)
 
-   // Other shenanigans with pointers:
-   printf("%i\n", *p);  // <- dereference operator, prints 50 (n) 
+    // Other shenanigans with pointers, like dereferencing or pointer arithmetic
+    printf("%i\n", *p);      // <- dereference operator, prints 50 (n) 
 
-   char *s = "HI!";     // Pointer to string containing HI!
-   char *c = &s[0];     // Pointer containing the address of H
-   printf("%p\n", s);   // Prints 0x1045bed90
-   printf("%p\n", c);   // Also prints 0x1045bed90
+    char *s = "HI!";         // Pointer to string containing HI!
+    char *c = &s[0];         // Pointer containing the address of H
+    printf("%p\n", s);       // Prints 0x10931fd90 (random memory)
+    printf("%p\n", c);       // Also prints 0x10931fd90
+    printf("%p\n", &s[0]);   // Also prints 0x10931fd90 (memory location of char 'H')
+    printf("%p\n", &s[1]);   // Prints 0x10931fd91 (memory location of char 'I')
+    printf("%p\n", &s[2]);   // Prints 0x10931fd92 (memory location of char '!')
+    printf("%p\n", &s[3]);   // Prints 0x10931fd93 (memory location of null byte \0)
 
+    printf("%c\n", *s);      // Prints H (dereference)
+    printf("%c\n", *(s+1));  // Prints I (dereference location + 1) <- "Pointer arithmetic"
+    printf("%c\n", *(s+2));  // Prints ! (dereference location + 2) <- "Pointer arithmetic"
+
+    // Pointer arithmetic also works with integers and even though we only add 1, it prints 4 bytes forward
+    int numbers[] = {4, 6, 8, 2, 7, 5, 0};
+
+    printf("%i\n", *numbers);       // Prints first number
+    printf("%i\n", *(numbers + 1)); // Prints second number, and so on
+    printf("%i\n", *(numbers + 2)); 
+    printf("%i\n", *(numbers + 3));
+    printf("%i\n", *(numbers + 4));
+    printf("%i\n", *(numbers + 5));
+    printf("%i\n", *(numbers + 6));
+
+    /*
+        To compare strings, we need to use strcmp
+        If we try to compare s2 == t2 it will always
+        be different, because it's comparing the addresses
+        of both arrays of chars that the pointers are
+        pointing to. If we want to compare the actual 
+        characters of each string, an additional function 
+        in C is needed as shown below:
+    */
+
+    char *s2 = "HI!";
+    char *t2 = "HI!";
+
+    if (strcmp(s2, t2) == 0)
+    {
+        printf("Same\n");
+    }
+    else
+    {
+        printf("Different\n");
+    }
+    
 }
+
 
 void types(void)
 {   
     /* Borrowed from https://www.tutorialspoint.com/cprogramming/c_data_types.htm
 
     - Ints - 
-    Type	        Storage size	            Value range
-    char	        1 byte	                    -128 to 127 or 0 to 255
-    unsigned char	1 byte	                    0 to 255
-    signed char	    1 byte	                    -128 to 127
-    int	            2 or 4 bytes	            -32,768 to 32,767 or -2,147,483,648 to 2,147,483,647
-    unsigned int	2 or 4 bytes	            0 to 65,535 or 0 to 4,294,967,295
-    short	        2 bytes	                    -32,768 to 32,767
-    unsigned short	2 bytes	                    0 to 65,535
-    long	        8 bytes or 4 bytes (x86)    -9223372036854775808 to 9223372036854775807
-    unsigned long	8 bytes	                    0 to 18446744073709551615 
+    Type                Storage size                Value range
+    char                1 byte                      -128 to 127 or 0 to 255
+    unsigned char       1 byte                      0 to 255
+    signed char         1 byte                      -128 to 127
+    int                 2 or 4 bytes                -32,768 to 32,767 or -2,147,483,648 to 2,147,483,647
+    unsigned int        2 or 4 bytes                0 to 65,535 or 0 to 4,294,967,295
+    short               2 bytes                     -32,768 to 32,767
+    unsigned short      2 bytes                     0 to 65,535
+    long                8 bytes or 4 bytes (x86)    -9223372036854775808 to 9223372036854775807
+    unsigned long       8 bytes                     0 to 18446744073709551615 
     
     - Floats -
-    Type	        Storage size	Value range	            Precision
-    float	        4 byte	        1.2E-38 to 3.4E+38	    6 decimal places
-    double	        8 byte	        2.3E-308 to 1.7E+308	15 decimal places
-    long double	    10 byte	        3.4E-4932 to 1.1E+4932	19 decimal places   */
+    Type                Storage size        Value range             Precision
+    float               4 byte              1.2E-38 to 3.4E+38      6 decimal places
+    double              8 byte              2.3E-308 to 1.7E+308    15 decimal places
+    long double         10 byte             3.4E-4932 to 1.1E+4932  19 decimal places   */
 
     printf("Printing mins and max for different data types based on integers:\n");
     printf("CHAR_BIT  : %d\n", CHAR_BIT);                       // prints 8
