@@ -1,5 +1,5 @@
 #include <stdio.h>  // printf
-#include <stdlib.h> // 
+#include <stdlib.h> // malloc
 #include <string.h> // strcmp
 #include <limits.h> // Provides variables to run types function
 #include <float.h>
@@ -22,7 +22,7 @@ void pointers(void)
     printf("%p\n", p);   // prints 0x7ff7ba10847c (randomised address)
     printf("%p\n", &n);  // prints 0x7ff7ba10847c (randomised address)
 
-    // Other shenanigans with pointers, like dereferencing or pointer arithmetic
+    // Other shenanigans with pointers, like dereferencing and pointer arithmetic
     printf("%i\n", *p);      // <- dereference operator, prints 50 (n) 
 
     char *s = "HI!";         // Pointer to string containing HI!
@@ -40,14 +40,13 @@ void pointers(void)
 
     // Pointer arithmetic also works with integers and even though we only add 1, it prints 4 bytes forward
     int numbers[] = {4, 6, 8, 2, 7, 5, 0};
+    int len_numbers = sizeof(numbers) / sizeof(*numbers); // Getting the array's length
 
     printf("%i\n", *numbers);       // Prints first number
-    printf("%i\n", *(numbers + 1)); // Prints second number, and so on
-    printf("%i\n", *(numbers + 2)); 
-    printf("%i\n", *(numbers + 3));
-    printf("%i\n", *(numbers + 4));
-    printf("%i\n", *(numbers + 5));
-    printf("%i\n", *(numbers + 6));
+    for (int next = 1; next < len_numbers; next++)
+    {
+        printf("%i\n", *(numbers + next));  // Prints second, third, fourth number, and so on
+    }
 
     /*
         To compare strings, we need to use strcmp
@@ -70,11 +69,29 @@ void pointers(void)
     {
         printf("Different\n");
     }
+
+    /*
+        To copy a string (array of chars), we can't simply do s = t,
+        because we would be copying the pointer to the same array. One
+        solution would be using malloc() and strcpy(), and then use free()
+    */
+
+    char *s3 = "Hiya!"; // String we want to copy
+    int len_s3 = strlen(s3) + 1; // Memory allocated to the whole array
     
+    char *t3 = malloc(len_s3); // We declare the empty array allocating the same memory than s3 (plus the null byte)
+    for (int i = 0; i < len_s3; i++)
+    {
+        t3[i] = s3[i];
+    }
+
+    printf("Original: %s | Copy: %s\n", s3, t3);
+    
+    free(t3); // We need to remember to use free() after using malloc()
 }
 
 
-void types(void)
+void types_and_sizes(void)
 {   
     /* Borrowed from https://www.tutorialspoint.com/cprogramming/c_data_types.htm
 
@@ -128,6 +145,6 @@ void types(void)
 int main(void) 
 {
     pointers();
-    //types();
+    //types_and_sizes();
 }
 
