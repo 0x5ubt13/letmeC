@@ -3,6 +3,56 @@
 #include <string.h> // strcmp
 #include <limits.h> // Provides variables to run types function
 #include <float.h>
+void recursion(void);
+void draw(int n);
+void pointers(void);
+void types_and_sizes(void);
+
+
+int main(void) 
+{
+    recursion(); 
+    //pointers();
+    //types_and_sizes();
+}
+
+void recursion(void)
+{
+    /*
+        We want to print a pyramid of this sort: 
+        
+        #
+        ##
+        ###
+        #### (height 4)
+
+        To showcase the usefulness of recursion, we will tell the function what's the final height we want
+        and it will recursively go upwards to print the upper layers
+    */
+
+    int height;
+    printf("Enter pyramid height: ");
+    scanf("%i", &height);
+    
+    draw(height);
+}
+
+void draw(int n)
+{
+    if (n <= 0) // Stop if height is 0 and start printing
+    {
+        return;
+    }
+    
+    draw(n - 1); // Recursively call this same function to print itself upwards
+
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("#");
+    }
+    printf("\n");
+}
 
 void pointers(void)
 {
@@ -90,7 +140,6 @@ void pointers(void)
     free(t3); // We need to remember to use free() after using malloc()
 }
 
-
 void types_and_sizes(void)
 {   
     /* Borrowed from https://www.tutorialspoint.com/cprogramming/c_data_types.htm
@@ -140,11 +189,5 @@ void types_and_sizes(void)
     printf("DBL_MAX   : %g\n", (double) DBL_MAX);               // prints 1.79769e+308
     printf("DBL_MIN   : %g\n", (double) DBL_MIN);               // prints 2.22507e-308
     printf("-DBL_MAX  : %g\n", (double) -DBL_MAX);              // prints -1.79769e+308
-}
-
-int main(void) 
-{
-    pointers();
-    //types_and_sizes();
 }
 
