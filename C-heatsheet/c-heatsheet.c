@@ -7,12 +7,15 @@ void recursion(void);
 void draw(int n);
 void pointers(void);
 void types_and_sizes(void);
-
+int arrays_lv1(void);
+int arrays_lv2(void);
 
 int main(void) 
 {
-    recursion(); 
+    //recursion(); 
     //pointers();
+    //arrays_lv1();
+    arrays_lv2(); // realloc()
     //types_and_sizes();
 }
 
@@ -44,9 +47,9 @@ void draw(int n)
         return;
     }
     
-    draw(n - 1); // Recursively call this same function to print itself upwards
+    draw(n - 1); // Keeps recursively call this same function to print itself upwards until reaches height 0 adding layers and layers
 
-
+    // Then it releases all printf functions from 1 to n
     for (int i = 0; i < n; i++)
     {
         printf("#");
@@ -138,6 +141,90 @@ void pointers(void)
     printf("Original: %s | Copy: %s\n", s3, t3);
     
     free(t3); // We need to remember to use free() after using malloc()
+}
+
+int arrays_lv1(void)
+{
+    /*
+        When declaring arrays in C, we can allocate them either in the stack or in the heap.
+        The next two operations are equivalent, with a twist:
+        int my_array[3];                            // will allocate memory in the stack
+        int *my_array = malloc(3 * sizeof(int));    // will allocate memory in the heap
+    */ 
+
+    // Declare array and populate it
+    int *list = malloc(3 * sizeof(int)); if (list == NULL) { free(list); return 1; } // error checking
+    list[0] = 1;
+    list[1] = 2;
+    list[2] = 3;
+
+    // Time passes and the program is very large. Problem: we want to increase the array's size
+
+    // Allocate new array of size 4
+    int *tmp = malloc(4 * sizeof(int)); if (tmp == NULL) { free(tmp); return 1; }
+    for (int i = 0; i < 3; i++) // Copy numbers from old array into new array
+    {
+        tmp[i] = list[i];
+    }
+    tmp[3] = 4;
+
+    // Free up the orphan array
+    free(list);
+
+    // Point our former list array to the tmp array
+    list = tmp;
+    
+    for (int i = 0; i < 4; i++)
+    {
+        printf("%i\n", list[i]);
+    }
+
+    // Free up the array before exiting the function
+    free(list);
+    return 0;
+}
+
+int arrays_lv2(void)
+{
+    /*
+        When declaring arrays in C, we can allocate them either in the stack or in the heap.
+        The next two operations are equivalent, with a twist:
+        int my_array[3];                            // will allocate memory in the stack
+        int *my_array = malloc(3 * sizeof(int));    // will allocate memory in the heap
+    */ 
+
+    // Declare array and populate it
+    int *list = malloc(3 * sizeof(int)); if (list == NULL) { free(list); return 1; } // error checking
+    list[0] = 1;
+    list[1] = 2;
+    list[2] = 3;
+
+    // Time passes and the program is very large. Problem: we want to increase the array's size
+
+    // Resize old array to be of size 4
+    int *tmp = realloc(list, 4 * sizeof(int)); if (tmp == NULL) { free(tmp); return 1; }
+
+    // No longer necessary:
+    // for (int i = 0; i < 3; i++) // Copy numbers from old array into new array 
+    // {
+    //     tmp[i] = list[i];
+    // }
+    tmp[3] = 4;
+
+    // Free up the orphan array
+    free(list);
+
+    // Point our former list array to the tmp array
+    list = tmp;
+    
+    for (int i = 0; i < 4; i++)
+    {
+        printf("%i\n", list[i]);
+    }
+
+    // Free up the array before exiting the function
+    free(list);
+    return 0;
 }
 
 void types_and_sizes(void)
