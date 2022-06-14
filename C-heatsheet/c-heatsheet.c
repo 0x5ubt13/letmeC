@@ -9,13 +9,20 @@ void pointers(void);
 void types_and_sizes(void);
 int arrays_lv1(void);
 int arrays_lv2(void);
+void linked_lists_lv1(void);
+void linked_lists_lv2(void);
 
 int main(void) 
 {
     //recursion(); 
     //pointers();
+
     //arrays_lv1();
-    arrays_lv2(); // realloc()
+    //arrays_lv2(); // realloc()
+    
+    // linked_lists_lv1();
+    linked_lists_lv2(); // No training wheels
+
     //types_and_sizes();
 }
 
@@ -226,6 +233,82 @@ int arrays_lv2(void)
     free(list);
     return 0;
 }
+
+typedef struct node
+{
+    int number;
+    struct node *next;
+}
+node;
+
+void linked_lists_lv1(void)
+{
+    /*
+        We will declare a new struct (node) that has both an int and a pointer to the next
+        node on the list, so that we don't depend of reallocating back to back
+        arrays in memory. We can terminate the list by adding a null address (0x0) to the last
+        element of the list. 
+    */
+
+    node *list = NULL; // We initialise the value to NULL so it's empty instead of a garbage value
+    node *n = malloc(sizeof(node)); // Tmp node, the compiler will know the size we need for a node struct
+
+    if (n != NULL) // If malloc() didn't give us an invalid memory
+    {
+        //(*n).number = 1; // (*n). is a dereference and means "go to what's in the address and then access the data structure"
+        n->number = 1; // n-> is syntactic sugar for (*n). so we don't mess with order of operations
+        n->next = NULL;
+    }
+
+    list = n;
+    free(list);
+}
+
+void linked_lists_lv2(void)
+{
+    // List of size node
+    node *list = malloc(sizeof(node)); if (n == NULL) { return; }
+    
+    // Add a number to the list and point to the next node
+    list->number = 1;
+    list->next = NULL;
+
+    // Append a number to the list
+    node *n = malloc(sizeof(node)); if (n == NULL) {free(list); return;}
+    n->number = 2;
+    n->next = NULL;
+    list->next = n; // Update the next value of 1 to the newly created node
+
+    // Append another number to the list
+    node *n = malloc(sizeof(node));
+    if (n == NULL) // Visualising better the error catching now, a bit trickier
+    {
+        free(list->next); // First, free the pointer to the second element
+        free(list); // Then, free the pointer to the first element
+        return;
+    }
+    n->number = 3;
+    n->next = NULL;
+    list->next->next = n; // !!!! what??? We have to stitch together all pointers
+
+    // Print numbers
+    // Declare new tmp node, assign it to list, while it's not the last one, keep going through them
+    for (node *tmp = list; tmp != NULL; tmp = tmp->next)
+    {
+        printf("%i\n", tmp->number);
+    }
+
+    // Free list -> you need to follow the stitches
+    while (list != NULL)
+    {
+        node *tmp = list->next; // tmp is now the second element
+        free(list); // We get rid of the first element
+        list = tmp; // Assign list to second element, rinse and repeat
+    }
+    return;
+}
+
+
 
 void types_and_sizes(void)
 {   
