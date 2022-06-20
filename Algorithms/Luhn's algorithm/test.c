@@ -12,7 +12,7 @@ long *array_of_digits_helper(void)
     temp=num;
 
     while(temp){
-        temp=temp/10;
+        temp = temp/10;
         factor = factor*10;
     }
 
@@ -32,12 +32,13 @@ long *array_of_digits_helper(void)
 }
 
 int main(){
-    long *array_digits = malloc(16 * sizeof(long));
+    long *array_digits;
     array_digits = array_of_digits_helper();
+    printf("%li\n", *array_digits);
 
-    for (int i = 0; i > 4; i++)
+    for (int i = 0; i < 4; i++)
     {
-        printf("%ld", array_digits[i]);
+        printf("%li", array_digits[i]);
     }
 
     free(array_digits);

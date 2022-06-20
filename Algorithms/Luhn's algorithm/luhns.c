@@ -73,6 +73,57 @@ int lenHelper(unsigned x) {
 // 3. If the total’s last digit is 0 (or, put more formally, if the total modulo 10 is congruent to 0), the number is valid!
 int luhns(long card)
 {
+    // 1. Multiply every other digit by 2, starting with the number’s second-to-last digit, and then add those products’ digits together.
+    // 1.1 Split number in digits
+    int *card_digits = malloc(16 * sizeof(int));
+
+    // We need to know the length of the card
+    int len_card = lenHelper(card);
+    
+
+    for (int i = 0; i > len_card; i++)
+    {
+
+    }
+
+    // 1.2 do the calculations
+
+    // free allocations
+    free(card_digits);
+}
+
+long *array_of_digits_helper(void)
+{
+    long num;
+    long temp, factor = 1;
+    long *array_of_digits = malloc(16 * sizeof(long));
+    printf("Enter a number: ");
+    scanf("%ld", &num);
+
+    temp=num;
+
+    while(temp){
+        temp=temp/10;
+        factor = factor*10;
+    }
+
+    // printf("Each digits of given number are: ");
+
+    int counter = 0;
+    while(factor>1){
+        // Digits 1 by 1
+        factor = factor/10;
+        // printf("%ld ", num/factor);
+        array_of_digits[counter] = num/factor;
+        counter++;
+        num = num % factor;
+    }
+    
+    return array_of_digits;
+}
+
+/*
+    // old code 
     // Take length
     char *card_to_string = malloc(sizeof(long));
     sprintf(card_to_string, "%ld", card);
