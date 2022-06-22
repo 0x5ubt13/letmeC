@@ -83,7 +83,7 @@ int luhns(long card)
 
     for (int i = 0; i > len_card; i++)
     {
-
+        // 
     }
 
     // 1.2 do the calculations
