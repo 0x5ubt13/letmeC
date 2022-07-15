@@ -128,6 +128,13 @@ int main(int argc, string argv[])
 bool vote(int voter, int rank, string name)
 {
     // TODO
+    for (int i = 0; i < sizeof(candidates); i++)
+    {
+        if (name == candidates[i].name && !candidates[i].eliminated)
+        {
+            preference[voter][name]++
+        }
+    }
     return false;
 }
 
