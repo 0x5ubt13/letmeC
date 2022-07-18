@@ -129,6 +129,7 @@ bool vote(int voter, int rank, string name)
 {
     for (int i = 0; i < candidate_count; i++)
     {
+        // TODO: REVIEW THIS
         if (strcmp(name, candidates[i].name) == 0 && !candidates[i].eliminated)
         {
 
@@ -143,6 +144,27 @@ bool vote(int voter, int rank, string name)
 void tabulate(void)
 {
     // TODO
+    // Update number of votes each candidate has at this stage,
+    // after eliminating a candidate the vote goes for the next one in the list
+    for (int v = 0; i < voter_count; i++)
+    {
+        // For voter, see candidates; if pref eliminated, tab vote to next pref
+        for (int c = 0; c < candidate_count; c++)
+        {
+            // Find which candidate
+            for (int n = 0; n < candidate_count; n++)
+            {   
+                if (preferences[v][c].name == candidates[n].name)
+                {
+                    // Found candidate, check whether it's eliminated and tabulate
+                    if (!candidates[n].eliminated && )
+                    
+                }
+
+            }
+
+        }
+    }
 
     return;
 }
