@@ -163,13 +163,15 @@ void tabulate(void)
                         continue;
                     }
 
-                    
-                    preferences[v][c+1]
-                    
+                    for (int n2 = 0; n2 < candidate_count; n2++)
+                    {
+                        if (preferences[v][c+1] == n2)
+                        {
+                            candidates[n2].votes++
+                        }
+                    }
                 }
-
             }
-
         }
     }
 
