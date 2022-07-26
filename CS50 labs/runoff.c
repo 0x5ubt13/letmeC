@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define _CRT_INT_MAX 2147483647
+
 // Max voters and candidates
 #define MAX_VOTERS 100
 #define MAX_CANDIDATES 9
@@ -128,55 +130,62 @@ int main(int argc, string argv[])
 // Record preference if vote is valid
 bool vote(int voter, int rank, string name)
 {
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // TODO: REVIEW THIS
-        if (strcmp(name, candidates[i].name) == 0 && !candidates[i].eliminated)
+    // Checking name is correct
+    {   
+        // For candidate in candedates
+        for (int i = 0; i < candidate_count; i++)
         {
-
-            preferences[voter][i] == rank;
-            return true;
-        }
+            // If candidate.name == valid candidate name, update references table
+            if (strcmp(candidates[i].name, name) == 0)
+            {
+                preferences[voter][rank] = i;
+                return true;
+            }
+        } 
     }
+
     return false;
 }
 
 // Tabulate votes for non-eliminated candidates
 void tabulate(void)
 {
-    // TODO
-    // Update number of votes each candidate has at this stage,
-    // after eliminating a candidate the vote goes for the next one in the list
-    for (int v = 0; v < voter_count; v++)
-    {
-        // For voter, see candidates; if pref eliminated, tab vote to next pref
-        for (int c = 0; c < candidate_count; c++)
-        {
-            // Find which candidate
-            for (int n = 0; n < candidate_count; n++)
-            {   
-                if (preferences[v][c] == n)
-                {
-                    // Found candidate, check whether it's eliminated and tabulate
-                    if (!candidates[n].eliminated)
-                    {
-                        continue;
-                    }
+    printf("Entering tabulate\n");
+    // Check the references table and vote accordingly
 
-                    for (int n2 = 0; n2 < candidate_count; n2++)
-                    {
-                        if (preferences[v][c+1] == n2)
-                        {
-                            candidates[n2].votes++
-                        }
-                    }
-                }
+    // Preferences[i][] loop
+    for (int i = 0; i < voter_count; i++)
+    {
+        // Preferences[][j] loop
+        for (int j = 0; j < candidate_count; j++)
+        {   
+            // If candidate is not eliminated, add the vote
+            if (candidates[j].eliminated == false)
+            {
+                candidates[j].votes += 1;
+                break;
             }
         }
     }
 
+    //DEBUG:
+    printf("Preferences table:\n");
+    for (int i = 0; i < voter_count; i++)
+    {
+        // Preferences[][j] loop
+        for (int j; j < candidate_count; j++)
+        {   
+            printf("Preferences[%i][%i] = %i\n", i, j, preferences[i][j]);
+        }
+    }
 
+    printf("Votes:\n");
+    for (int i = 0; i < voter_count; i++)
+    {
+        printf("candidates[%i].votes = %i\n", i, candidates[i].votes);
+    }
 
+    printf("Exiting tabulate\n");
     return;
 }
 
@@ -185,12 +194,16 @@ bool print_winner(void)
 {
     for (int i = 0; i < candidate_count; i++)
     {
-        if (candidates[i].votes > voter_count / 2)
+        if (!candidates[i].eliminated)
         {
-            printf("We have a winner!! -> %s", candidates[i].name);
-            return true;
+            if (candidates[i].votes > voter_count / 2)
+            {
+                printf("%s\n", candidates[i].name);
+                return true;
+            }
         }
     }
+
     return false;
 }
 
@@ -201,9 +214,12 @@ int find_min(void)
 
     for (int i = 0; i < candidate_count; i++)
     {
-        if (candidates[i].votes < min)
+        if (!candidates[i].eliminated)
         {
-            min = candidates[i].votes;
+            if (candidates[i].votes < min)
+            {
+                min = candidates[i].votes;
+            }
         }
     }
 
@@ -215,14 +231,14 @@ bool is_tie(int min)
 {
     int valid_candidates = 0;
     int min_candidates = 0;
-    
+
     for (int i = 0; i < candidate_count; i++)
     {
         if (!candidates[i].eliminated)
         {
             // Take a note of how many of the candidates are not eliminated
             valid_candidates++;
-            
+
             // Take a note of how many of the not eliminated candidates have the minimum number of votes
             if (candidates[i].votes == min)
             {
@@ -249,7 +265,8 @@ void eliminate(int min)
         {
             // Take a note of how many of the not eliminated candidates have the minimum number of votes
             if (candidates[i].votes == min)
-            {
+            {   
+                candidates[i].votes = 0;
                 candidates[i].eliminated = true;
             }
         }
