@@ -169,23 +169,24 @@ void tabulate(void)
     }
 
     //DEBUG:
-    printf("Preferences table:\n");
-    for (int i = 0; i < voter_count; i++)
-    {
-        // Preferences[][j] loop
-        for (int j; j < candidate_count; j++)
-        {   
-            printf("Preferences[%i][%i] = %i\n", i, j, preferences[i][j]);
-        }
-    }
+    // printf("Preferences table:\n");
+    // for (int i = 0; i < voter_count; i++)
+    // {
+    //     // Preferences[][j] loop
+    //     for (int j; j < candidate_count; j++)
+    //     {   
+    //         printf("Preferences[%i][%i] = %i\n", i, j, preferences[i][j]);
+    //     }
+    // }
 
-    printf("Votes:\n");
-    for (int i = 0; i < voter_count; i++)
-    {
-        printf("candidates[%i].votes = %i\n", i, candidates[i].votes);
-    }
+    // printf("Votes:\n");
+    // for (int i = 0; i < voter_count; i++)
+    // {
+    //     printf("candidates[%i].votes = %i\n", i, candidates[i].votes);
+    // }
 
-    printf("Exiting tabulate\n");
+    // printf("Exiting tabulate\n");
+    
     return;
 }
 
