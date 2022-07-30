@@ -156,19 +156,24 @@ void tabulate(void)
     // Preferences[i][] loop
     for (int i = 0; i < voter_count; i++)
     {
+        int j = 0;
+
         // Preferences[][j] loop
-        for (int j = 0; j < candidate_count; j++)
-        {   
-            // If candidate is not eliminated, add the vote
-            if (candidates[j].eliminated == false)
+        int done = 0;
+        while (!done)
+        {
+            if (!candidates[preferences[i][j]].eliminated)
             {
-                candidates[j].votes += 1;
-                break;
+                candidates[preferences[i][j]].votes += 1;
+                
+                done = 1;
             }
+
+            j++;
         }
     }
 
-    //DEBUG:
+    // DEBUG:
     printf("Preferences table:\n");
     for (int i = 0; i < voter_count; i++)
     {
