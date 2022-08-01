@@ -42,6 +42,9 @@
 *.idb
 *.pdb
 
+# Wav files
+*.wav
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
