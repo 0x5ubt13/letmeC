@@ -33,15 +33,29 @@ int main(int argc, char *argv[])
 
     float factor = atof(argv[3]);
 
-    // TODO: Copy header from input file to output file
-    
+    // Copy header from input file to output file
     uint8_t header[44];
     fread(&header, sizeof(uint8_t), HEADER_SIZE, input);
     fwrite(&header, sizeof(uint8_t), HEADER_SIZE, output);
 
-    // TODO: Read samples from input file and write updated data to output file
-    // uint16_t buffer;
-
+    // Read samples from input file and write updated data to output file
+    // Data is stored in blocks of 2 * 8 bytes, assigning int16_t will cover its length
+    int16_t buffer;
+    int check = 1;
+    while (check)
+    {
+        // fread() returns number of bytes
+        int successful = fread(&buffer, sizeof(int16_t), 1, input);
+        if (!successful)
+        {
+            check = 0;
+            break;
+        }
+        
+        // Multiply times factor and write to filea
+        buffer *= factor; 
+        fwrite(&buffer, sizeof(int16_t), 1, output);
+    }
 
     // Close files
     fclose(input);
