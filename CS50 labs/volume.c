@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     int check = 1;
     while (check)
     {
-        // fread() returns number of bytes
+        // fread() returns number of bytes. Stop if EOF reached
         int successful = fread(&buffer, sizeof(int16_t), 1, input);
         if (!successful)
         {
