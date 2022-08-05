@@ -1,150 +1,122 @@
-#include <getopt.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "helpers.h"
+#include <stdio.h>
+#include <inttypes.h>
+#include <math.h>
 
-int main(int argc, char *argv[])
+// image[height][] is the row
+// image[][width] is the column
+
+// Convert image to grayscale
+void grayscale(int height, int width, RGBTRIPLE image[height][width])
 {
-    // Define allowable filters
-    char *filters = "bgrs";
-
-    // Get filter flag and check validity
-    char filter = getopt(argc, argv, filters);
-    if (filter == '?')
+    // Calculate the average of brightness for every pixel's channel and equal all 3 values to the same to create grey
+    for (int i = 0; i < height; i++) // row
     {
-        printf("Invalid filter.\n");
-        return 1;
-    }
-
-    // Ensure only one filter
-    if (getopt(argc, argv, filters) != -1)
-    {
-        printf("Only one filter allowed.\n");
-        return 2;
-    }
-
-    // Ensure proper usage
-    if (argc != optind + 2)
-    {
-        printf("Usage: ./filter [flag] infile outfile\n");
-        return 3;
-    }
-
-    // Remember filenames
-    char *infile = argv[optind];
-    char *outfile = argv[optind + 1];
-
-    // Open input file
-    FILE *inptr = fopen(infile, "r");
-    if (inptr == NULL)
-    {
-        printf("Could not open %s.\n", infile);
-        return 4;
-    }
-
-    // Open output file
-    FILE *outptr = fopen(outfile, "w");
-    if (outptr == NULL)
-    {
-        fclose(inptr);
-        printf("Could not create %s.\n", outfile);
-        return 5;
-    }
-
-    // Read infile's BITMAPFILEHEADER
-    BITMAPFILEHEADER bf;
-    fread(&bf, sizeof(BITMAPFILEHEADER), 1, inptr);
-
-    // Read infile's BITMAPINFOHEADER
-    BITMAPINFOHEADER bi;
-    fread(&bi, sizeof(BITMAPINFOHEADER), 1, inptr);
-
-    // Ensure infile is (likely) a 24-bit uncompressed BMP 4.0
-    if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 ||
-        bi.biBitCount != 24 || bi.biCompression != 0)
-    {
-        fclose(outptr);
-        fclose(inptr);
-        printf("Unsupported file format.\n");
-        return 6;
-    }
-
-    // Get image's dimensions
-    int height = abs(bi.biHeight);
-    int width = bi.biWidth;
-
-    // Allocate memory for image
-    RGBTRIPLE(*image)[width] = calloc(height, width * sizeof(RGBTRIPLE));
-    if (image == NULL)
-    {
-        printf("Not enough memory to store image.\n");
-        fclose(outptr);
-        fclose(inptr);
-        return 7;
-    }
-
-    // Determine padding for scanlines
-    int padding = (4 - (width * sizeof(RGBTRIPLE)) % 4) % 4;
-
-    // Iterate over infile's scanlines
-    for (int i = 0; i < height; i++)
-    {
-        // Read row into pixel array
-        fread(image[i], sizeof(RGBTRIPLE), width, inptr);
-
-        // Skip over padding
-        fseek(inptr, padding, SEEK_CUR);
-    }
-
-    // Filter image
-    switch (filter)
-    {
-        // Blur
-        case 'b':
-            blur(height, width, image);
-            break;
-
-        // Grayscale
-        case 'g':
-            grayscale(height, width, image);
-            break;
-
-        // Reflection
-        case 'r':
-            reflect(height, width, image);
-            break;
-
-        // Sepia
-        case 's':
-            sepia(height, width, image);
-            break;
-    }
-
-    // Write outfile's BITMAPFILEHEADER
-    fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, outptr);
-
-    // Write outfile's BITMAPINFOHEADER
-    fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
-
-    // Write new pixels to outfile
-    for (int i = 0; i < height; i++)
-    {
-        // Write row to outfile
-        fwrite(image[i], sizeof(RGBTRIPLE), width, outptr);
-
-        // Write padding at end of row
-        for (int k = 0; k < padding; k++)
+        for (int j = 0; j < width; j++) // column
         {
-            fputc(0x00, outptr);
+            uint8_t red   = image[i][j].rgbtRed;
+            uint8_t green = image[i][j].rgbtGreen;
+            uint8_t blue  = image[i][j].rgbtBlue;
+            
+            uint8_t average = (red + green + blue) / 3;
+
+            // Write new values
+            image[i][j].rgbtRed   = average;
+            image[i][j].rgbtGreen = average;
+            image[i][j].rgbtBlue  = average;
+
+            // Debug:
+            // printf("R:%02x G:%02x B:%02x\n", image[i][j].rgbtRed, image[i][j].rgbtGreen, image[i][j].rgbtBlue);
         }
     }
 
-    // Free memory for image
-    free(image);
+    return;
+}
 
-    // Close files
-    fclose(inptr);
-    fclose(outptr);
-    return 0;
+// Convert image to sepia
+void sepia(int height, int width, RGBTRIPLE image[height][width])
+{
+    // sepiaRed   = .393 * originalRed + .769 * originalGreen + .189 * originalBlue
+    // sepiaGreen = .349 * originalRed + .686 * originalGreen + .168 * originalBlue
+    // sepiaBlue  = .272 * originalRed + .534 * originalGreen + .131 * originalBlue
+
+    for (int i = 0; i < height; i++) // row
+    {
+        for (int j = 0; j < width; j++) // column
+        {
+            float red   = image[i][j].rgbtRed;
+            float green = image[i][j].rgbtGreen;
+            float blue  = image[i][j].rgbtBlue;
+            
+            int new_red = round(.393 * red + .769 * green + .189 * blue);
+            if (new_red > 255) 
+            { 
+                new_red = 255; 
+            }
+
+            int new_green = round(.349 * red + .686 * green + .168 * blue);
+            if (new_green > 255) 
+            { 
+                new_green = 255; 
+            }
+
+            int new_blue  = round(.272 * red + .534 * green + .131 * blue);
+            if (new_blue > 255) 
+            {
+                new_blue = 255; 
+            }
+            
+            // Write new values
+            image[i][j].rgbtRed   = new_red;
+            image[i][j].rgbtGreen = new_green;
+            image[i][j].rgbtBlue  = new_blue;
+
+            // Debug:
+            // if (image[i][j].rgbtBlue > 200)
+            // {
+            //     printf("Height %i, Width %i:\nOriginal: \tR:%02x G:%02x B:%02x\nNew: \t\tR:%02x G:%02x B:%02x\n", i, j, red, green, blue, image[i][j].rgbtRed, image[i][j].rgbtGreen, image[i][j].rgbtBlue);
+            // }
+        }
+    }
+
+    return;
+}
+
+// Helper func to reverse rows
+void ReverseArray(RGBTRIPLE arr[], int size)
+{
+    for (int i = 0; i < size/2; i++)
+    {
+        RGBTRIPLE temp = arr[i];
+        arr[i] = arr[size - 1 - i];
+        arr[size - 1 - i] = temp;
+    }
+}
+
+// Reflect image horizontally
+void reflect(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Invert rows
+    for (int i = 0; i < height; i++) // row
+    {
+        ReverseArray(image[i], width);
+    }
+
+    return;
+}
+
+// Blur image
+void blur(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Using box blur, averaging 3x3 grid for each pixel
+
+    for (int i = 0; i < height; i++) // row
+    {
+        for (int j = 0; j < width; j++) // column
+        {
+            
+        }
+    }
+
+    return;
 }
