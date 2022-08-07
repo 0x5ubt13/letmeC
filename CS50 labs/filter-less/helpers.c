@@ -18,7 +18,7 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
             uint8_t green = image[i][j].rgbtGreen;
             uint8_t blue  = image[i][j].rgbtBlue;
             
-            uint8_t average = (red + green + blue) / 3;
+            uint8_t average = round((red + green + blue) / 3.0);
 
             // Write new values
             image[i][j].rgbtRed   = average;
@@ -110,13 +110,113 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
 {
     // Using box blur, averaging 3x3 grid for each pixel
 
+    // Create shadow grid to store values
+    RGBTRIPLE shadow_grid[height][width];  
     for (int i = 0; i < height; i++) // row
     {
         for (int j = 0; j < width; j++) // column
         {
-            // Define neighbours
+            // Define neighbours and sum averages
+            int average_red   = 0;
+            int average_green = 0;
+            int average_blue  = 0;
+            float total = 1.0;
 
-            // Apply blur effect
+            // Upper row
+            if (i != 0) 
+            {
+                // UP LEFT
+                if (j != 0)
+                {
+                    average_red   += image[i - 1][j - 1].rgbtRed;
+                    average_green += image[i - 1][j - 1].rgbtGreen;
+                    average_blue  += image[i - 1][j - 1].rgbtBlue; 
+                    total++;
+                }
+
+                // UP RIGHT
+                if (j != width)
+                {
+                    average_red   += image[i - 1][j + 1].rgbtRed;
+                    average_green += image[i - 1][j + 1].rgbtGreen;
+                    average_blue  += image[i - 1][j + 1].rgbtBlue; 
+                    total++;
+                }
+
+                // UP
+                average_red   += image[i - 1][j].rgbtRed;
+                average_green += image[i - 1][j].rgbtGreen;
+                average_blue  += image[i - 1][j].rgbtBlue;
+                total++;
+            }
+
+            // Center row
+            // LEFT
+            if (j != 0)
+            {
+                average_red   += image[i][j - 1].rgbtRed;
+                average_green += image[i][j - 1].rgbtGreen;
+                average_blue  += image[i][j - 1].rgbtBlue;
+                total++;
+            }
+
+            // CENTER (itself) (always true)
+            average_red   += image[i][j].rgbtRed;
+            average_green += image[i][j].rgbtGreen;
+            average_blue  += image[i][j].rgbtBlue;            
+                
+            // RIGHT
+            if (j != width)
+            {
+                average_red   += image[i][j + 1].rgbtRed;
+                average_green += image[i][j + 1].rgbtGreen;
+                average_blue  += image[i][j + 1].rgbtBlue;
+                total++;
+            }
+
+            // Lower row
+            if (i != height)
+            {
+                // DOWN LEFT
+                if (j != 0)
+                {
+                    average_red   += image[i + 1][j - 1].rgbtRed;
+                    average_green += image[i + 1][j - 1].rgbtGreen;
+                    average_blue  += image[i + 1][j - 1].rgbtBlue;
+                    total++;
+                }
+                
+                // DOWN RIGHT
+                if (j != width)
+                {
+                    average_red   += image[i + 1][j + 1].rgbtRed;
+                    average_green += image[i + 1][j + 1].rgbtGreen;
+                    average_blue  += image[i + 1][j + 1].rgbtBlue;
+                    total++;
+                }
+
+                // DOWN
+                average_red   += image[i + 1][j].rgbtRed;
+                average_green += image[i + 1][j].rgbtGreen;
+                average_blue  += image[i + 1][j].rgbtBlue;
+                total++;
+            }
+
+            // Apply blur effect to the shadow image
+            shadow_grid[i][j].rgbtRed   = round(average_red   / total);
+            shadow_grid[i][j].rgbtGreen = round(average_green / total);
+            shadow_grid[i][j].rgbtBlue  = round(average_blue  / total);
+        }
+    }
+
+    // Copy shadow grid to original grid
+    for (int i = 0; i < height; i++) // row
+    {
+        for (int j = 0; j < width; j++) // column
+        {
+            image[i][j].rgbtRed   = shadow_grid[i][j].rgbtRed;
+            image[i][j].rgbtGreen = shadow_grid[i][j].rgbtGreen;
+            image[i][j].rgbtBlue  = shadow_grid[i][j].rgbtBlue;
         }
     }
 
