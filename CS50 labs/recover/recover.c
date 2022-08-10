@@ -2,36 +2,38 @@
 #include <stdlib.h>
 
 void generateFiles(opened file, ...?);
-void printError(void);
+void printError(char *filename);
 void printUsage(void);
+
+typedef uint8_t BYTE;
  
 int main(int argc, char *argv[])
 {
     // Check that only one argument has been passed
-    // implement printUsage() to use if failed and make main return 1
-    if (not 1 arg) 
+    if (argc != 2)
     {
         printUsage();
         return 1;
     }
 
     // Open file
-
+    FILE *file = fopen(argv[1], "r");
     
-    // If forensic image can't be opened, inform the user and make main return 1
-    if (FILE cannot open)
+    // RETURN VALUE
+    //   Upon successful completion fopen(), fdopen(), and freopen() return a FILE pointer.   Otherwise,  NULL  is  re‐
+    //   turned and errno is set to indicate the error.
+    if (file == NULL)
     {
-        printError()
+        printError(argv[1]);
+        return 1;
     }
 
     // Generated files should be named ###.jpg, starting with 000
-    generateFiles(opened file);
+    generateFiles(file);
 
     // Remember to free memory after using malloc() with free(foo)
-
     // Clean up
-    fclose(opened file);
-    // free(whatever)?
+    cleanUp();
     return 0;
 }
 
@@ -41,13 +43,21 @@ void generateFiles(opened file)
 
 }
 
-void printError(void)
+void printError(char *filename)
 {
-    printf();
+    printf("There was an error trying to open file '%s'", &filename);
 }
 
 void printUsage(void)
 {
-    printf();
+    printf("Error detected. Please, pass only one command-line argument.\nUsage:");
+    printf("./recover <filename>");
 }
 
+void cleanUp(void)
+{
+    fclose(file);
+    // free(whatever)?
+    // free(whatever)?
+    // free(whatever)?
+}
