@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void generateFiles(opened file, ...?);
+int matchesMagicBytes(BYTE byte1, BYTE byte2, BYTE byte3, BYTE byte4);
+void generateFiles(FILE *f);
 void printError(char *filename);
 void printUsage(void);
 
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
     }
 
     // Open file
-    FILE *file = fopen(argv[1], "r");
+    FILE *raw_file = fopen(argv[1], "r");
     
     // RETURN VALUE
     //   Upon successful completion fopen(), fdopen(), and freopen() return a FILE pointer.   Otherwise,  NULL  is  re‐
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
     }
 
     // Generated files should be named ###.jpg, starting with 000
-    generateFiles(file);
+    generateFiles(raw_file);
 
     // Remember to free memory after using malloc() with free(foo)
     // Clean up
@@ -38,9 +39,42 @@ int main(int argc, char *argv[])
 }
 
 // Recover every one of the JPEGs from input file, storing each as a separate file in the current working directory. 
-void generateFiles(opened file)
+void generateFiles(FILE *f)
 {
+    BYTE buffer[512];
+    // fread()
+    // if fread reads a jpg magic bytes header, (buffer[0] == 0xff, buffer[1] == 0xd8, buffer[2] == 0xff, buffer[3] & 0xf0 == 0xe0]), 
+        // open new file and write to it
+    // if fread reads a new one, close previous and write to new 
+    // if fread == 0, close everything and end
 
+    // Keep reading until EOF
+    while (fread(buffer, 1, 512, f) == 512)
+    {
+        int isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
+        if (isMatch)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+}
+
+int matchesMagicBytes(BYTE byte1, BYTE byte2, BYTE byte3, BYTE byte4)
+{
+    if (byte1 == 0xff && byte2 == 0xd8 && byte3 == 0xff)
+    {   
+        // Using bitwise operation & 0xf0 to read only the first 4 bits
+        if (byte4 & 0xf0 == 0xe0)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
 }
 
 void printError(char *filename)
