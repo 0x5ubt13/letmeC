@@ -47,13 +47,16 @@ void generateFiles(FILE *f)
         // open new file and write to it
     // if fread reads a new one, close previous and write to new 
     // if fread == 0, close everything and end
-
+    
     // Keep reading until EOF
     while (fread(buffer, 1, 512, f) == 512)
     {
+        // Check whether a new jpg has been found
+        // sprintf("%03i")
         int isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
         if (isMatch)
         {
+            
 
         }
         else
