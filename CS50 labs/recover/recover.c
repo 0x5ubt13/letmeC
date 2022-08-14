@@ -32,40 +32,55 @@ int main(int argc, char *argv[])
     // Generated files should be named ###.jpg, starting with 000
     generateFiles(raw_file);
 
-    // Remember to free memory after using malloc() with free(foo)
     // Clean up
+    fclose(raw_file);
+    
+
     cleanUp();
+
     return 0;
 }
 
 // Recover every one of the JPEGs from input file, storing each as a separate file in the current working directory. 
 void generateFiles(FILE *f)
 {
-    BYTE buffer[512];
-    // fread()
-    // if fread reads a jpg magic bytes header, (buffer[0] == 0xff, buffer[1] == 0xd8, buffer[2] == 0xff, buffer[3] & 0xf0 == 0xe0]), 
-        // open new file and write to it
-    // if fread reads a new one, close previous and write to new 
-    // if fread == 0, close everything and end
+    // Allocate buffer to work with the raw file
+    BYTE *buffer = malloc(512 * sizeof(BYTE));
+    char *filename = malloc(8 * sizeof(char));
+    int filename_count = 0;
     
-    // Keep reading until EOF
-    while (fread(buffer, 1, 512, f) == 512)
+    // Start and Keep reading until EOF
+    while (fread(&buffer, 1, 512, f) == 512)
     {
+
         // Check whether a new jpg has been found
-        // sprintf("%03i")
         int isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
         if (isMatch)
         {
-            
+            // Close current file
+            if (nf)
+            {
+                fclose(nf);
+                filename_count++;
+            }
 
+            // Create new filename and open new file
+            sprintf(filename, "%03i.jpg", filename_count); // Print a digit with 3 numbers to represent it, 
+            FILE *nf = fopen(filename, "w");
         }
-        else
-        {
 
-        }
+        // Write bytes from file <f> to new file <nf>
+        // fwrite(data, size, number, outptr)
+        fwrite(&buffer, 512, 1, nf);
     }
+
+    // Tidy up
+    fclose(nf);
+    free(filename);
+    free(buffer);
 }
 
+// Helper to find JPEG's magic bytes
 int matchesMagicBytes(BYTE byte1, BYTE byte2, BYTE byte3, BYTE byte4)
 {
     if (byte1 == 0xff && byte2 == 0xd8 && byte3 == 0xff)
@@ -80,9 +95,9 @@ int matchesMagicBytes(BYTE byte1, BYTE byte2, BYTE byte3, BYTE byte4)
     return 0;
 }
 
-void printError(char *filename)
+void printError(char *fname)
 {
-    printf("There was an error trying to open file '%s'", &filename);
+    printf("There was an error trying to open file '%s'", fname);
 }
 
 void printUsage(void)
@@ -91,10 +106,3 @@ void printUsage(void)
     printf("./recover <filename>");
 }
 
-void cleanUp(void)
-{
-    fclose(file);
-    // free(whatever)?
-    // free(whatever)?
-    // free(whatever)?
-}
