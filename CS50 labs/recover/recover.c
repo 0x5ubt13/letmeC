@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 int matchesMagicBytes(BYTE byte1, BYTE byte2, BYTE byte3, BYTE byte4);
 void generateFiles(FILE *f);
