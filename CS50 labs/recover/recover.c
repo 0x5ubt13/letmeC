@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4);
+uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, char *filename);
 void generateFiles(FILE *f);
 void printError(char *filename);
 void printUsage(void);
@@ -55,33 +55,40 @@ void generateFiles(FILE *f)
     int filename_count = 0;
     sprintf(filename, "%03i.jpg", filename_count); // Print a digit with 3 numbers to represent it, 
     FILE *nf = fopen(filename, "w");
+    short open_new = 1;
 
     // Start and Keep reading until EOF
     while (fread(buffer, 1, 512, f) == 512)
     {
         // printf("Reading buffer... -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]);
-        for (int i = 0; i > 512)
 
         // Check whether a new jpg has been found
-        uint8_t isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3]);
+        uint8_t isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3], filename);
         if (isMatch)
         {
-            printf("Magic bytes -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]);
+            printf("Magic bytes found -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]);
             // Close current file
             if (nf)
             {
                 fclose(nf);
                 filename_count++;
+                open_new = 1;
             }
         }
 
         // Create new filename and open new file
-        sprintf(filename, "%03i.jpg", filename_count); // Print a digit with 3 numbers to represent it, 
-        nf = fopen(filename, "w");
+        if (open_new)
+        {
+            sprintf(filename, "%03i.jpg", filename_count); // Print a digit with 3 numbers to represent it, 
+            printf("[+] Opening new file: %s\n", filename);
+            nf = fopen(filename, "w");
+        }
 
         // Write bytes from file <f> to new file <nf>
         // fwrite(data, size, number, outptr)
         fwrite(buffer, 1, 512, nf);
+        printf("[+] Written 512 bytes to %s\n", filename);
+        open_new = 0;
     }
 
     // Tidy up
@@ -91,17 +98,14 @@ void generateFiles(FILE *f)
 }
 
 // Helper to find JPEG's magic bytes
-uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4)
+uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, char *filename)
 {
-    printf("Comparing buffer... -> %x, %x, %x, %x\n", byte1, byte2, byte3, byte4);
 
-    if (byte1 == 0xff && byte2 == 0xd8 && byte3 == 0xff)
+    // Using bitwise operation & 0xf0 to read only the first 4 bits
+    if (byte1 == 0xff && byte2 == 0xd8 && byte3 == 0xff && (byte4 & 0xf0) == 0xe0)
     {   
-        // Using bitwise operation & 0xf0 to read only the first 4 bits
-        if (byte4 & 0xf0 == 0xe0)
-        {
-            return 1;
-        }
+        printf("[+] New image found. Closing %s\n", filename);
+        return 1;
     }
 
     return 0;
@@ -109,12 +113,12 @@ uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t b
 
 void printError(char *fname)
 {
-    printf("There was an error trying to open file '%s'", fname);
+    printf("There was an error trying to open file '%s'\n", fname);
 }
 
 void printUsage(void)
 {
     printf("Error detected. Please, pass only one command-line argument.\nUsage:");
-    printf("./recover <filename>");
+    printf("./recover <filename>\n");
 }
 
