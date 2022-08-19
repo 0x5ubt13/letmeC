@@ -45,30 +45,31 @@ void generateFiles(FILE *f)
 {
     printf("start generateFiles\n");
 
-    // Allocate buffer to work with the raw file
+    // Allocate buffer to work with the raw file, and also allocate space for a dynamic filename
     uint8_t *buffer = malloc(512 * sizeof(uint8_t));
-    printf("allocated buffer\n");
-
     char *filename = malloc(10 * sizeof(char));
-    printf("allocated filename\n");
 
+    // Declaring needed vars and setting them accordingly
+    FILE *nf;
     int filename_count = 0;
-    sprintf(filename, "%03i.jpg", filename_count); // Print a digit with 3 numbers to represent it, 
-    FILE *nf = fopen(filename, "w");
     short open_new = 1;
+    short writing = 0;
+    short counter = 0;
 
     // Start and Keep reading until EOF
     while (fread(buffer, 1, 512, f) == 512)
     {
-        // printf("Reading buffer... -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]);
+        // printf("Reading buffer... -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]); // Debug
 
         // Check whether a new jpg has been found
         uint8_t isMatch = matchesMagicBytes(buffer[0], buffer[1], buffer[2], buffer[3], filename);
         if (isMatch)
         {
-            printf("Magic bytes found -> %x, %x, %x, %x\n", buffer[0], buffer[1], buffer[2], buffer[3]);
-            // Close current file
-            if (nf)
+            writing = 1;          
+            counter++;
+
+            // Close current file, enforced from 001.jpg 
+            if (counter > 1)
             {
                 fclose(nf);
                 filename_count++;
@@ -84,14 +85,18 @@ void generateFiles(FILE *f)
             nf = fopen(filename, "w");
         }
 
-        // Write bytes from file <f> to new file <nf>
-        // fwrite(data, size, number, outptr)
-        fwrite(buffer, 1, 512, nf);
-        printf("[+] Written 512 bytes to %s\n", filename);
+        // Write bytes from file <f> to new file <nf> with fwrite(data, size, number, outptr)
+        if (writing)
+        {
+            fwrite(buffer, 1, 512, nf);
+            // printf("[+] Written 512 bytes to %s\n", filename);
+        }
+        
         open_new = 0;
     }
 
-    // Tidy up
+    // Tidying up
+    printf("[+] EOF reached. Closing %s\n", filename);
     fclose(nf);
     free(filename);
     free(buffer);
@@ -111,11 +116,13 @@ uint8_t matchesMagicBytes(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t b
     return 0;
 }
 
+// Prints error opening the file
 void printError(char *fname)
 {
     printf("There was an error trying to open file '%s'\n", fname);
 }
 
+// Prints usage to the user
 void printUsage(void)
 {
     printf("Error detected. Please, pass only one command-line argument.\nUsage:");
