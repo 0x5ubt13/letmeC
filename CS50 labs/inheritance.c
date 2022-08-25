@@ -101,9 +101,14 @@ void free_family(person *p)
     }
 
     // TODO: Free parents recursively
+    while (p != NULL)
+    {
+        person *tmp0 = p->parents[0];
+        person *tmp1 = p->parents[1];
+    }
 
     // TODO: Free child
-
+    free(p);
 }
 
 // Print each family member and their alleles.
