@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "dictionary.h"
 
@@ -37,7 +38,36 @@ unsigned int hash(const char *word)
 bool load(const char *dictionary)
 {
     // TODO
+    // Open dictionary file
+    FILE *f = fopen(dictionary, "r"); if (f == NULL) { return false; }
+    char next_word[LENGTH];
+
+
+    // Read strings from file one at a time
+    while (fscanf(f, "%s", next_word) != EOF)
+c    {
+        // Create a new node for each word
+        // typedef struct node
+        // {
+        //     char word[LENGTH + 1];
+        //     struct node *next;
+        // }
+        // node;
+
+        node new_node = malloc(sizeof(node));
+        new_node->word = next_word;
+
+        // Hash word to obtain a hash value
+        int index = hash(new_node);
+
+        // Insert node into hash table at that location
+        
+    }
+
+    fclose(f);
     return true;
+
+    // If unsuccessful, return false
     return false;
 }
 
