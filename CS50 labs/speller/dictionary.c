@@ -45,7 +45,7 @@ bool load(const char *dictionary)
 
     // Read strings from file one at a time
     while (fscanf(f, "%s", next_word) != EOF)
-c    {
+    {
         // Create a new node for each word
         // typedef struct node
         // {
@@ -54,6 +54,13 @@ c    {
         // }
         // node;
 
+        // Maybe tries?
+        // typedef struct trie
+        // {
+        //     struct trie *child[26];
+        //     bool is_word;
+        // }
+
         node new_node = malloc(sizeof(node));
         new_node->word = next_word;
 
@@ -61,7 +68,7 @@ c    {
         int index = hash(new_node);
 
         // Insert node into hash table at that location
-        
+
     }
 
     fclose(f);
