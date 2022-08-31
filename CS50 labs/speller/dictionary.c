@@ -14,6 +14,24 @@ typedef struct node
 }
 node;
 
+// Using tries instead
+typedef struct trienode
+{
+    struct trienode *children[LENGTH+1];
+    bool is_word;
+} 
+trienode;
+
+trienode *create_node() {
+    trienode *new_node = malloc(sizeof(new_node))
+
+    for (int i = 0; i < LENGTH; i++)
+    {
+        new_node->children[i] = NULL;
+    }
+    new_node->terminal = false;
+}
+
 // TODO: Choose number of buckets in hash table
 const unsigned int N = 26;
 
@@ -39,10 +57,14 @@ bool load(const char *dictionary)
 {
     // TODO
     // Open dictionary file
-    FILE *f = fopen(dictionary, "r"); if (f == NULL) { return false; }
+    FILE *f = fopen(dictionary, "r"); 
+    if (f == NULL) 
+    { 
+        return false; 
+    }
+
     char next_word[LENGTH];
-
-
+    
     // Read strings from file one at a time
     while (fscanf(f, "%s", next_word) != EOF)
     {
@@ -55,11 +77,7 @@ bool load(const char *dictionary)
         // node;
 
         // Maybe tries?
-        // typedef struct trie
-        // {
-        //     struct trie *child[26];
-        //     bool is_word;
-        // }
+        
 
         node new_node = malloc(sizeof(node));
         new_node->word = next_word;
