@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "dictionary.h"
 
@@ -17,7 +18,12 @@ void main(void)
     while (fscanf(f, "%s", next_word) == 1)
     {
         // Create a new node for each word
-        printf("%s\n", next_word);
+        for (int i = 0; i < strlen(next_word); i++)
+        {
+            printf("%c\n", next_word[i]);
+            
+        }
+        
 
         // Hash word to obtain a hash value
 
