@@ -3,33 +3,30 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "dictionary.h"
 
-// Represents a node in a hash table
+// Represents a node in a hash table, tweaking to make it a trienode
 typedef struct node
 {
     char word[LENGTH + 1];
     struct node *next;
+    bool is_word;
 }
 node;
 
-// Using tries instead
-typedef struct trienode
-{
-    struct trienode *children[LENGTH+1];
-    bool is_word;
-} 
-trienode;
-
-trienode *create_node() {
-    trienode *new_node = malloc(sizeof(new_node))
+// Helper function to create a new node, allocating mem and setting all children to null
+node *create_node() {
+    node *new_node = malloc(sizeof(new_node))
 
     for (int i = 0; i < LENGTH; i++)
     {
-        new_node->children[i] = NULL;
+        new_node->next[i] = NULL;
     }
-    new_node->terminal = false;
+    new_node->is_word = false;
+
+    return new_node;
 }
 
 // TODO: Choose number of buckets in hash table
@@ -68,19 +65,11 @@ bool load(const char *dictionary)
     // Read strings from file one at a time
     while (fscanf(f, "%s", next_word) != EOF)
     {
-        // Create a new node for each word
-        // typedef struct node
-        // {
-        //     char word[LENGTH + 1];
-        //     struct node *next;
-        // }
-        // node;
-
-        // Maybe tries?
-        
-
-        node new_node = malloc(sizeof(node));
-        new_node->word = next_word;
+        // Parse letter by letter
+        for (int i = 0; i < strlen(next_word); i++) 
+        {
+            //not convinced by this, will research other options
+        }
 
         // Hash word to obtain a hash value
         int index = hash(new_node);
