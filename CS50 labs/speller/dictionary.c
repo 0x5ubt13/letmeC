@@ -46,6 +46,7 @@ bool check(const char *word)
 unsigned int hash(const char *word)
 {
     // TODO: Improve this hash function
+    // Return the numerical number of each letter in an array together?
     return toupper(word[0]) - 'A';
 }
 
@@ -89,6 +90,7 @@ bool load(const char *dictionary)
 unsigned int size(void)
 {
     // TODO
+    // Breadth-first search? Look for every terminal node and stop if next pointer is null, then go back to previous node
     return 0;
 }
 
