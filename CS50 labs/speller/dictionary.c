@@ -16,7 +16,7 @@ struct TrieNode {
     // The Trie Node Structure
     // Each node has N children, starting from the root
     // and a flag to check if it's a leaf node
-    char data; // Storing for printing purposes only
+    // char data; // Storing for printing purposes only
     TrieNode* children[N];
     int is_leaf;
 };
@@ -27,7 +27,7 @@ TrieNode* make_trienode(char data) {
     for (int i=0; i<N; i++)
         node->children[i] = NULL;
     node->is_leaf = 0;
-    node->data = data;
+    // node->data = data;
     return node;
 }
 
@@ -86,97 +86,97 @@ int search_trie(TrieNode* root, char* word)
     return 0;
 }
 
-void print_trie(TrieNode* root) {
-    // Prints the nodes of the trie
-    if (!root)
-        return;
-    TrieNode* temp = root;
-    printf("%c -> ", temp->data);
-    for (int i=0; i<N; i++) {
-        print_trie(temp->children[i]); 
-    }
-}
+// void print_trie(TrieNode* root) {
+//     // Prints the nodes of the trie
+//     if (!root)
+//         return;
+//     TrieNode* temp = root;
+//     // printf("%c -> ", temp->data);
+//     for (int i=0; i<N; i++) {
+//         print_trie(temp->children[i]); 
+//     }
+// }
 
-void print_search(TrieNode* root, char* word) {
-    printf("Searching for %s: ", word);
-    if (search_trie(root, word) == 0)
-        printf("Not Found\n");
-    else
-        printf("Found!\n");
-}
+// void print_search(TrieNode* root, char* word) {
+//     printf("Searching for %s: ", word);
+//     if (search_trie(root, word) == 0)
+//         printf("Not Found\n");
+//     else
+//         printf("Found!\n");
+// }
 
 // Helper function to create a new node, allocating mem and setting all children to null
-node *create_node() 
-{
-    node *root = (node*) malloc(sizeof(node));
+// node *create_node() 
+// {
+//     node *root = (node*) malloc(sizeof(node));
 
-    for (int i = 0; i < N; i++)
-    {
-        root->next[i] = NULL;
-    }
-    root->is_word = false;
+//     for (int i = 0; i < N; i++)
+//     {
+//         root->next[i] = NULL;
+//     }
+//     root->is_word = false;
 
-    return root;
-}
+//     return root;
+// }
 
-// Get it cleaned up recursively
-void free_node(node *to_free) 
-{
-    for (int i = 0; i < LENGTH+1; i++)
-    {
-        if (to_free->next[i] != NULL)
-        {
-            free_node(to_free->next[i]);
-        }
-        else
-        {
-            continue;
-        }
-    }
+// // Get it cleaned up recursively
+// void free_node(node *to_free) 
+// {
+//     for (int i = 0; i < LENGTH+1; i++)
+//     {
+//         if (to_free->next[i] != NULL)
+//         {
+//             free_node(to_free->next[i]);
+//         }
+//         else
+//         {
+//             continue;
+//         }
+//     }
 
-    free(to_free);
-}
+//     free(to_free);
+// }
 
-// Helper function to insert a new word in the table
-void insert_node(node *root, char *raw_word) 
-{
-    printf("Starting insert_node()");
+// // Helper function to insert a new word in the table
+// void insert_node(node *root, char *raw_word) 
+// {
+//     printf("Starting insert_node()");
 
-    // Set temp node pointer to root to start traversing the tree
-    node *temp = root;
+//     // Set temp node pointer to root to start traversing the tree
+//     node *temp = root;
     
-    // Loop over every letter of the word
-    for (int i = 0; raw_word[i] != '\0'; i++)
-    {
-        int index;
-        // Get the number of the letter 
-        if (islower(raw_word[i]) == 0)
-        {
-            index = (int) tolower(raw_word[i]) - 'a';
-        }
-        else
-        {
-            index = (int) raw_word[i] - 'a';
-        }
-        printf("%i", index);
-        // Create new child if empty
-        if (temp->next[index] == NULL)
-        {
-            temp->next[index] = create_node();
-        }
+//     // Loop over every letter of the word
+//     for (int i = 0; raw_word[i] != '\0'; i++)
+//     {
+//         int index;
+//         // Get the number of the letter 
+//         if (islower(raw_word[i]) == 0)
+//         {
+//             index = (int) tolower(raw_word[i]) - 'a';
+//         }
+//         else
+//         {
+//             index = (int) raw_word[i] - 'a';
+//         }
+//         printf("%i", index);
+//         // Create new child if empty
+//         if (temp->next[index] == NULL)
+//         {
+//             temp->next[index] = create_node();
+//         }
         
-        // Follow the child
-        temp = temp->next[index];
-    }    
+//         // Follow the child
+//         temp = temp->next[index];
+//     }    
 
-    // End of the word, mark current node as word and add 1 to the global count
-    temp->is_word = true;
-}
+//     // End of the word, mark current node as word and add 1 to the global count
+//     temp->is_word = true;
+// }
 
 int total_words = 0;
 
 // Hash table - modified to be the root of the trie node
-node *table;
+// node *table;
 TrieNode* root;
 
 // Returns true if word is in dictionary, else false
@@ -186,15 +186,33 @@ bool check(const char *word)
 
     int len = strlen(word);
     char lowercase_word[len+1];
-    for (int i = 0; word[i]; i++)
+    
+    // Process every letter
+    for (int i = 0; i < word[i] != '\0'; i++)
     {
-        lowercase_word[i] = tolower(word[i]);
+        // Check if it's upper
+        if (word[i] > 'A' && word[i] < '[')
+        {
+            lowercase_word[i] = tolower(word[i]);
+        }
+        // Check if it's lower or apostrophe
+        else if (word[i] == '\'' || (word[i] > 'a' && word[i] > '{'))
+        {
+            lowercase_word[i] = word[i];
+        }
+        // Check if it's apostophe
+        // else if (word[i] == '\'')
     }
 
     for (int i = 0; lowercase_word[i] != '\0'; i++)
     {
         // Get the numerical value for the letter
         int pos = lowercase_word[i] - 'a'; 
+        // printf("%c -> %i\n", lowercase_word[i], pos);
+
+        // Program is failing because it's printing weird characters like '
+        // need to check the ASCII table to find out whether it's a recognised symbol or a garbage byte
+        // which one is -81?????? (+65)
         
         // Check whether it exists
         if (temp->children[pos] == NULL)
@@ -203,7 +221,11 @@ bool check(const char *word)
         }
         
         // If exists, traverse to next position
-        temp = temp->children[pos];
+        if (temp->children[pos])
+        {
+            temp = temp->children[pos];
+
+        }
     }
 
     // If traversed to the end of the word and trie node is true, return check successful
