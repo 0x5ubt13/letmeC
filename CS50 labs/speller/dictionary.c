@@ -48,29 +48,39 @@ TrieNode* insert_trie(TrieNode* root, char* word) {
     // Inserts the word onto the Trie
     // ASSUMPTION: The word only has lower case characters
     TrieNode* temp = root;
+    int idx = 0;
+    char processed_word[LENGTH]; 
 
-    // Process every letter
-    for (int i = 0; i < word[i] != '\0'; i++)
+    // Process every letter to lower
+    for (int i = 0; word[i] != '\0'; i++)
     {
         // Check if it's upper
         if (word[i] > 'A' && word[i] < '[')
         {
-            word[i] = tolower(word[i]);
+            processed_word[i] = tolower(word[i]);
         }
-        // Check if it's lower or apostrophe
+        // Check if it's lower
         else if (word[i] == '\'' || (word[i] > 'a' && word[i] > '{'))
         {
-            word[i] = word[i];
+            processed_word[i] = word[i];
         }
     }
 
-    for (int i=0; word[i] != '\0'; i++) {
-        // Get the relative position in the alphabet list
-        int idx = word[i] - 'a';
-        if (temp->children[idx] == NULL) {
+    for (int i = 0; processed_word[i] != '\0'; i++) {
+        // Get the relative position in the alphabet list, but assign 26 to apostrophe
+        if (processed_word[i] == '\'')
+        {   
+            idx = 26;
+        }
+        else 
+        {
+            idx = processed_word[i] - 'a';
+        }
+
+        if (temp->children[idx] == NULL) { // (fixed) CONFLICTING LINE -> SIGSEGV
             // If the corresponding child doesn't exist,
             // simply create that child!
-            temp->children[idx] = make_trienode(word[i]);
+            temp->children[idx] = make_trienode(processed_word[i]);
         }
         else {
             // Do nothing. The node already exists
@@ -78,9 +88,14 @@ TrieNode* insert_trie(TrieNode* root, char* word) {
         // Go down a level, to the child referenced by idx
         // since we have a prefix match
         temp = temp->children[idx];
+        
+        // At the end of the word, mark this node as the leaf node
+        if (processed_word[i+1] == '\0')
+        {
+            temp->is_leaf = 1;
+        }
     }
-    // At the end of the word, mark this node as the leaf node
-    temp->is_leaf = 1;
+
     return root;
 }
 
@@ -110,9 +125,7 @@ int total_words = 0;
 bool check(const char *word)
 {
     TrieNode *temp = root;
-
-    int len = strlen(word);
-    char lowercase_word[len+1];
+    char lowercase_word[LENGTH];
     
     // Process every letter
     for (int i = 0; i < word[i] != '\0'; i++)
@@ -132,7 +145,15 @@ bool check(const char *word)
     for (int i = 0; lowercase_word[i] != '\0'; i++)
     {
         // Get the numerical value for the letter
-        int pos = lowercase_word[i] - 'a'; 
+        int pos;
+        if (lowercase_word[i] == '\'')
+        {
+            pos = 26;
+        }
+        else 
+        {
+            pos = lowercase_word[i] - 'a'; 
+        }
         // printf("%c -> %i\n", lowercase_word[i], pos);
 
         // Program is failing because it's printing weird characters like '
@@ -149,7 +170,6 @@ bool check(const char *word)
         if (temp->children[pos])
         {
             temp = temp->children[pos];
-
         }
     }
 
@@ -190,8 +210,6 @@ bool load(const char *dictionary)
 {
     printf("Starting load()");
 
-    root = make_trienode('\0');
-
     // TODO
     // Open dictionary file, create root node and declare space for words
     FILE *f = fopen(dictionary, "r"); 
@@ -206,7 +224,7 @@ bool load(const char *dictionary)
     // Read strings from file one at a time
     while (fscanf(f, "%s", next_word) != EOF)
     {
-        // printf("Starting fscanf()");
+        // printf("Starting fscanf()\n");
 
         // Load word in the trie node
         root = insert_trie(root, next_word);
@@ -218,6 +236,8 @@ bool load(const char *dictionary)
         // Insert node into hash table at that location
         // skipping for now
     }
+
+    // printf("fscanf complete.\n");
 
     fclose(f);
     
