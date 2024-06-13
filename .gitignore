@@ -63,3 +63,5 @@ CS50 labs/volume/volume
 .vscode/targets.log
 CS50 labs/speller/test
 CS50 labs/speller/test.c
+.idea/
+.vscode/
