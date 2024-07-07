@@ -5,8 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 #define LINES 100               /* max lines to be sorted */
+#define MAXLEN 1000
+int readlines(char **lineptr, int maxlines);
+void sort(char **v, int n);
 
-main()                          /* sort input lines */
+void main()                          /* sort input lines */
 {
     char *lineptr[LINES];       /* pointers to text lines */
     int nlines;                 /* number of input lines read */
@@ -19,11 +22,7 @@ main()                          /* sort input lines */
         printf("input too big to sort\n");
 }
 
-#define MAXLEN 1000
-
-readlines(lineptr, maxlines)    /* read input lines */
-char *lineptr[];                /* for sorting */
-int maxlines;
+int readlines(char **lineptr, int maxlines)    /* read input lines */ /* for sorting */
 {
     int len, nlines;
     char *p, *alloc(), line[MAXLEN];
@@ -45,9 +44,7 @@ int maxlines;
 /* The newline at the end of each line is deleted so it will
  * not affect the order in which the lines are sorted. */
 
-void writelines(lineptr, nlines) /* write output lines */
-char *lineptr[];
-int nlines;
+void writelines(char *lineptr[], int nlines) /* write output lines */
 {
     //    int i;
     //
@@ -65,9 +62,7 @@ int nlines;
      * advances it to the next line while nlines is counted down */
 }
 
-sort(v, n)                      /* sort strings v[0] v[n-1] into increasing order */
-char *v[];                      /* aka lineptr */
-int n;
+void sort(char **v, int n)       /* sort strings v[0] v[n-1] into increasing order; char *v[] aka lineptr */
 {
     int gap, i, j;
     char *temp;
